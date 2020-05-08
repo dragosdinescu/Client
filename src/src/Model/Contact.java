@@ -7,10 +7,10 @@ public class Contact {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private CarrierEnum carrierEnum;
+    private String carrierEnum;
     private Date date;
 
-    public Contact(String firstName, String lastName, String email, String phoneNumber, CarrierEnum carrierEnum, Date date){
+    public Contact(String firstName, String lastName, String email, String phoneNumber, String carrierEnum, Date date){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -35,7 +35,7 @@ public class Contact {
         return phoneNumber;
     }
 
-    public CarrierEnum getCarrierEnum() {
+    public String  getCarrierEnum() {
         return carrierEnum;
     }
 
@@ -59,7 +59,7 @@ public class Contact {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setCarrierEnum(CarrierEnum carrierEnum) {
+    public void setCarrierEnum(String carrierEnum) {
         this.carrierEnum = carrierEnum;
     }
 

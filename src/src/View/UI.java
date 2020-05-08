@@ -1,9 +1,12 @@
 package src.View;
 
+import src.Model.Contact;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 public class UI {
     private GraphicsConfiguration gc;
@@ -12,11 +15,16 @@ public class UI {
     private JTextField firstNameField, lastNameField, emailField, phoneNumberField, carrierField, registrationDateField;
     private JPanel buttonPanel, fieldsPanel, comboxPanel;
     private JButton submit, add, delete, modify, ok;
+    private HashMap<String, Contact> contactMap;
+
+    public UI (HashMap<String, Contact> contactMap){
+        this.contactMap = contactMap;
+    }
 
     public void startUI() {
         this.frame = new JFrame(gc);
         this.frame.setTitle("Client");
-        this.frame.setSize(600, 600);
+        this.frame.setSize(1000, 1000);
         this.frame.setLocation(200, 200);
 
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,13 +49,6 @@ public class UI {
         phoneNumberField = new JTextField(" ");
         carrierField = new JTextField(" ");
         registrationDateField = new JTextField(" ");
-        ok = new JButton("OK");
-        ok.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         submit = new JButton("Trimite");
         submit.addActionListener(new ActionListener() {
             @Override
@@ -94,11 +95,28 @@ public class UI {
         fieldsPanel.add(registrationDateField);
         comboxPanel.add(select);
         select.setAlignmentX(Component.CENTER_ALIGNMENT);
-        String[] choices = {"a", "s", "w", "d"};
-        final JComboBox<String> cb = new JComboBox<String>(choices);
+        String[] choices = contactMap.keySet().toArray(new String[0]);
+        JComboBox<String> cb = new JComboBox<String>(choices);
         cb.setMaximumSize(cb.getPreferredSize());
         cb.setAlignmentX(Component.CENTER_ALIGNMENT);
         cb.setVisible(true);
+        ok = new JButton("OK");
+        ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String id = (String) cb.getSelectedItem();
+                String message = "";
+                Contact contact = contactMap.get(id);
+                message += contact.getFirstName()+"\n"
+                        +contact.getLastName()+"\n"
+                        +contact.getEmail()+"\n"
+                        +contact.getPhoneNumber()+"\n"
+                        +contact.getCarrierEnum()+"\n"
+                        +contact.getDate()+"\n";
+                JOptionPane.showMessageDialog(null,message);
+            }
+        });
+
         comboxPanel.add(cb);
         ok.setAlignmentX(Component.CENTER_ALIGNMENT);
         comboxPanel.add(ok);
