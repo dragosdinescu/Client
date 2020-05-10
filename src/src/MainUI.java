@@ -20,6 +20,7 @@ public class MainUI {
         contactMap.put("02",c2);
         contactMap.put("03",c3);
 
+
         UI ui=new UI(contactMap);
         ui.startUI();
     }
