@@ -20,7 +20,7 @@ public class UI {
     private JLabel firstName, lastName, email, phoneNumber, carrier, registrationDate, select;
     private JTextField firstNameField, lastNameField, emailField, phoneNumberField, carrierField, registrationDateField;
     private JPanel buttonPanel, fieldsPanel, comboxPanel;
-    private JButton submit, add, delete, modify, ok;
+    private JButton submit, add, delete, modify, clear;
     private HashMap<String, Contact> contactMap;
     private JComboBox<String> cb;
     public ArrayList<JTextField> textFields;
@@ -50,7 +50,7 @@ public class UI {
         cb.setMaximumSize(cb.getPreferredSize());
         cb.setAlignmentX(Component.CENTER_ALIGNMENT);
         cb.setVisible(true);
-        ok.setAlignmentX(Component.CENTER_ALIGNMENT);
+        clear.setAlignmentX(Component.CENTER_ALIGNMENT);
         frame.setSize(500, 300);
         frame.setLayout(new GridLayout(2, 3));
         buttonPanel.setLayout(new GridLayout(4, 1));
@@ -59,24 +59,17 @@ public class UI {
     }
 
     private void setActionListeners (){
-        submit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null,"Contactul a fost trimis");
-            }
+        submit.addActionListener(actionEvent-> {
+            JOptionPane.showMessageDialog(null,"Contactul a fost trimis");
         });
 
         add.addActionListener(actionEvent-> addContact());
 
-
-
         delete.addActionListener(actionEvent-> deleteContact());
 
+        modify.addActionListener(actionEvent-> modifyContact());
 
-        modify.addActionListener(actionEvent->  {
-
-        });
-        ok.addActionListener(actionEvent -> clearFields());
+        clear.addActionListener(actionEvent -> clearFields());
 
         cb.addActionListener( actionEvent -> {
             String id = (String) cb.getSelectedItem();
@@ -93,7 +86,7 @@ public class UI {
         add = new JButton("Contact nou");
         delete = new JButton("Sterge");
         modify = new JButton("Modifica");
-        ok = new JButton("Clear");
+        clear = new JButton("Clear");
     }
 
     private void fillFields(Contact contact){
@@ -104,20 +97,6 @@ public class UI {
         this.registrationDateField.setText(String.valueOf(contact.getDate()));
         this.carrierField.setText(contact.getCarrierEnum());
     }
-
-    private void clearFields(){
-        for (int i = 0; i <textFields.size() ; i++) {
-            JTextField element = textFields.get(i);
-            element.setText("");
-        }
-    }
-    private void deleteContact() {
-        String id = (String) cb.getSelectedItem();
-        contactMap.remove(id);
-        System.out.println(contactMap);
-        updateComboBox();
-        }
-
 
     private void createElements(){
         buttonPanel = new JPanel();
@@ -162,7 +141,7 @@ public class UI {
         fieldsPanel.add(registrationDateField);
         comboxPanel.add(select);
         comboxPanel.add(cb);
-        comboxPanel.add(ok);
+        comboxPanel.add(clear);
         buttonPanel.add(submit);
         buttonPanel.add(add);
         buttonPanel.add(delete);
@@ -170,6 +149,18 @@ public class UI {
         frame.add(fieldsPanel);
         frame.add(buttonPanel);
         frame.add(comboxPanel);
+    }
+    private void deleteContact() {
+        String id = (String) cb.getSelectedItem();
+        contactMap.remove(id);
+        System.out.println(contactMap);
+        updateComboBox();
+    }
+    private void clearFields(){
+        for (int i = 0; i <textFields.size() ; i++) {
+            JTextField element = textFields.get(i);
+            element.setText("");
+        }
     }
     private void updateComboBox(){
         cb.removeAllItems();
@@ -179,13 +170,10 @@ public class UI {
         }
     }
     private void addContact(){
-        String startDateString = "06/27/2007";
-        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-        String date = "";
+        DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
         Date startDate = null;
         try {
             startDate = df.parse(registrationDateField.getText());
-            date = df.format(startDate);
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -195,6 +183,26 @@ public class UI {
         updateComboBox();
         clearFields();
 
+    }
+    private void modifyContact(){
+        String id = (String) cb.getSelectedItem();
+        Contact existingcontact = contactMap.get(id);
+        existingcontact.setFirstName(firstNameField.getText());
+        existingcontact.setLastName(lastNameField.getText());
+        existingcontact.setEmail(emailField.getText());
+        existingcontact.setPhoneNumber(phoneNumberField.getText());
+        existingcontact.setCarrierEnum(carrierField.getText());
+
+        DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        Date startDate = null;
+        try {
+            startDate = df.parse(registrationDateField.getText());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        existingcontact.setDate(startDate);
+        clearFields();
     }
 
 }
