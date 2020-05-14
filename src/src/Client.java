@@ -1,8 +1,15 @@
 package src;
 
+import src.Constants.Action;
+import src.Model.Contact;
+import src.View.UI;
+
+import javax.swing.*;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class Client  {
 
@@ -12,10 +19,12 @@ public class Client  {
     private boolean foundHost = false;
     private ObjectOutputStream objectOutputStream = null;
     private ObjectInputStream objectInputStream = null;
+    private HashMap<String, Contact> contacts;
+    private UI ui;
 
-
-
-    public Client(int port){
+    public Client(int port, HashMap<String,Contact> contacts, UI ui){
+        this.contacts = contacts;
+        this.ui = ui;
         this.port = port;
         connectAsClient(this.port);
     }
@@ -50,7 +59,7 @@ public class Client  {
         while (foundHost) {
             try {
                 Object o = objectInputStream.readObject();//variabila "o" returneaza obiectul de pe inputstream care a fost trimis de server
-                handle((String) o);
+                handle((Message) o);
             } catch (Exception e){
                 foundHost=false;
                 e.printStackTrace();
@@ -58,11 +67,30 @@ public class Client  {
         }
     }
 
-    public void handle(String tokens){
+    public void handle(Message message){
+        if(message.action.equals(Action.ADD)){
+            contacts.put(message.ID, message.contact);
+            Contact contact = message.contact;
+            System.out.println(contact.getFirstName());
+            ui.updateComboBox();
 
-                System.out.println(tokens);
         }
-
+        if(message.action.equals(Action.FAIL)){
+            JOptionPane.showMessageDialog(null,"Contactul este deja existent");
+        }
+        if(message.action.equals(Action.SUCCESS)){
+            JOptionPane.showMessageDialog(null,"Contactul a fost adaugat in server");
+        }
+    }
+    public void sendObject(Object object) {
+        if (foundHost) {
+            try {
+                this.objectOutputStream.writeObject(object);
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
+        }
+    }
 
 }
 

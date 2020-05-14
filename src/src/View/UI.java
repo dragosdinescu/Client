@@ -1,5 +1,8 @@
 package src.View;
 
+import src.Client;
+import src.Constants.Action;
+import src.Message;
 import src.Model.Contact;
 
 import javax.swing.*;
@@ -24,11 +27,15 @@ public class UI {
     private HashMap<String, Contact> contactMap;
     private JComboBox<String> cb;
     public ArrayList<JTextField> textFields;
+    public Client client;
     public UI (HashMap<String, Contact> contactMap){
         this.contactMap = contactMap;
         textFields = new ArrayList<>();
     }
-
+    public Contact getSelectedContact() {
+        Contact contact = contactMap.get(cb.getSelectedItem());
+        return contact;
+    }
     public void startUI() {
         this.frame = new JFrame(gc);
         this.frame.setTitle("Client");
@@ -60,23 +67,34 @@ public class UI {
 
     private void setActionListeners (){
         submit.addActionListener(actionEvent-> {
-            JOptionPane.showMessageDialog(null,"Contactul a fost trimis");
+            Contact contact = getSelectedContact();
+            Message message = new Message(contact, Action.VERIFY, contact.getFirstName());
+            client.sendObject(message);
         });
 
         add.addActionListener(actionEvent-> addContact());
 
-        delete.addActionListener(actionEvent-> deleteContact());
+        delete.addActionListener(actionEvent-> {
+            Contact contact = getSelectedContact();
+            Message message = new Message(contact, Action.REMOVE, contact.getFirstName());
+            client.sendObject(message);
+            deleteContact();
+        });
 
-        modify.addActionListener(actionEvent-> modifyContact());
+        modify.addActionListener(actionEvent-> {
+            Contact contact = modifyContact();
+            Message message =  new Message(contact, Action.MODIFY, contact.getFirstName());
+            client.sendObject(message);
+        });
 
         clear.addActionListener(actionEvent -> clearFields());
 
         cb.addActionListener( actionEvent -> {
             String id = (String) cb.getSelectedItem();
-            Contact contact = contactMap.get(id);
-            System.out.println(contact);
-            if(contact!=null) {
-                fillFields(contact);
+            Contact selectedContact = contactMap.get(id);
+            System.out.println(selectedContact);
+            if(selectedContact!=null) {
+                fillFields(selectedContact);
             }
         });
     }
@@ -162,7 +180,7 @@ public class UI {
             element.setText("");
         }
     }
-    private void updateComboBox(){
+    public void updateComboBox(){
         cb.removeAllItems();
         Set<String> keySet = contactMap.keySet();
         for (String id:keySet) {
@@ -184,7 +202,7 @@ public class UI {
         clearFields();
 
     }
-    private void modifyContact(){
+    private Contact modifyContact(){
         String id = (String) cb.getSelectedItem();
         Contact existingcontact = contactMap.get(id);
         existingcontact.setFirstName(firstNameField.getText());
@@ -203,7 +221,9 @@ public class UI {
         }
         existingcontact.setDate(startDate);
         clearFields();
+        return existingcontact;
     }
+
 
 }
 

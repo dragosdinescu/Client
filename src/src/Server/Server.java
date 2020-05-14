@@ -1,20 +1,35 @@
 package src.Server;
 
-import src.Client;
+import src.Constants.Action;
+import src.Message;
+import src.Model.CarrierEnum;
+import src.Model.Contact;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 public class Server {
     private Thread thread;
     private Socket socket;
     private ServerSocket serverSocket;
     private int port;
+    private HashMap<String, Contact> contactMap;
+    private CarrierEnum carrierEnum ;
+    final String dateFormat = "dd-mm-yyyy";
+    SimpleDateFormat sdf;
+
     public Server(int port){
+        sdf = new SimpleDateFormat(dateFormat);
+        carrierEnum = new CarrierEnum("Digi", "vodafone", "Orange");
+        contactMap = new HashMap<String, Contact>();
         this.port = port;//atribuire
+        createDummyContacts();
         try { //prinde eroarea
             serverSocket = new ServerSocket(this.port);//instantiere
         } catch (IOException e) {
@@ -44,14 +59,36 @@ public class Server {
         }
     }
     public void sendInitialData(ClientWrapper clientWrapper){
-        sendObject(clientWrapper, "server says");
+
+        for (String key: contactMap.keySet()) {
+            Contact contact = contactMap.get(key);
+            Message message = new Message(contact, Action.ADD, contact.getFirstName());
+            sendObject(clientWrapper, message);
+        }
+
+    }
+    public void createDummyContacts(){
+        Contact c1 = null;
+        Contact c2 = null;
+        Contact c3 = null;
+        try {
+             c1 = new Contact("Radu", "Soro", "ceva@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
+             c2 = new Contact("Ade", "Mirea", "someting@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
+             c3 = new Contact("Ion", "Popescu", "whatever@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+            contactMap.put(c1.getFirstName(), c1);
+            contactMap.put(c2.getFirstName(), c2);
+            contactMap.put(c3.getFirstName(), c3);
+
     }
     public void readObject(ClientWrapper clientWrapper){
         Socket socket = clientWrapper.getSocket();//returneaza instanta de getsocket DIN CLIENTWRAPPER
         while( ! socket.isClosed()){//cat timp socketul nu e inchis, intra in try
             try{
                 Object receivedObject = clientWrapper.getObjectInputStream().readObject();//receivedObject returneaza OBIECTUL primit de la client
-                respond(clientWrapper, receivedObject);
+                respond(clientWrapper,(Message) receivedObject);
             }catch(Exception e){
                 e.printStackTrace();
                 try {
@@ -62,9 +99,26 @@ public class Server {
             }
         }
     }
-    public void respond(ClientWrapper clientWrapper, Object receivedObject){
-        System.out.println("received object " + receivedObject);
-
+    public void respond(ClientWrapper clientWrapper, Message message){
+        Contact contact = message.contact;
+        if(message.action.equals(Action.VERIFY)){
+            if(contactMap.containsKey(message.ID)){
+                Message response = new Message(contact, Action.FAIL, message.ID);
+                sendObject(clientWrapper, response);
+            }else{
+                contactMap.put(message.ID, contact);
+                Message response = new Message(contact, Action.SUCCESS, message.ID);
+                sendObject(clientWrapper, response);
+            }
+        }
+        if(message.action.equals(Action.REMOVE)){
+            contactMap.remove(message.ID);
+        }
+        if(message.action.equals(Action.MODIFY)){
+            contactMap.remove(message.ID);
+            contactMap.put(message.ID, contact);
+            System.out.println("XD");
+        }
     }
     public void sendObject(ClientWrapper clientWrapper, Object object){
         Socket socket = clientWrapper.getSocket();//primeste instanta de socket din clientwrapper
