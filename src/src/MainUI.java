@@ -22,9 +22,9 @@ public class MainUI {
         Contact c2 = null;
         Contact c3 = null;
         try {
-             c1 = new Contact("Radu", "Soro", "ceva@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
-             c2 = new Contact("Ade", "Mirea", "someting@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
-             c3 = new Contact("Ion", "Popescu", "whatever@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
+            c1 = new Contact("Radu", "Soro", "ceva@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
+            c2 = new Contact("Ade", "Mirea", "someting@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
+            c3 = new Contact("Ion", "Popescu", "whatever@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -38,60 +38,7 @@ public class MainUI {
         UI ui = new UI(contactMap);
         ui.startUI();
 
-
-//        Socket socket = new Socket("127.0.0.1",5000);
-
-        class Client {
-            // initialize socket and input output streams
-            private Socket socket = null;
-            private DataInputStream input = null;
-            private DataOutputStream out = null;
-
-            // constructor to put ip address and port
-            public Client(String address, int port) {
-                // establish a connection
-                try {
-                    socket = new Socket(address, port);
-                    System.out.println("Connected");
-
-                    // takes input from terminal
-                    input = new DataInputStream(System.in);
-
-                    // sends output to the socket
-                    out = new DataOutputStream(socket.getOutputStream());
-                } catch (UnknownHostException u) {
-                    System.out.println(u);
-                } catch (IOException i) {
-                    System.out.println(i);
-                }
-
-                // string to read message from input
-                String line = "";
-
-                // keep reading until "Over" is input
-                while (!line.equals("Over")) {
-                    try {
-                        line = input.readLine();
-                        out.writeUTF(line);
-                    } catch (IOException i) {
-                        System.out.println(i);
-                    }
-                }
-
-                // close the connection
-                try {
-                    input.close();
-                    out.close();
-                    socket.close();
-                } catch (IOException i) {
-                    System.out.println(i);
-                }
-                Client client = new Client("127.0.0.1", 5000);
-            }
-
-
-
-        }
+        Client client = new Client(5000);
+    }
 
     }
-}

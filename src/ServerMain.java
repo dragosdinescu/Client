@@ -1,3 +1,5 @@
+import src.Server.Server;
+
 import java.net.*;
 import java.io.*;
 
@@ -54,7 +56,7 @@ public class ServerMain {
 
     public static void main(String[] args) throws IOException {
 
-        ServerMain server = new ServerMain(5000);
+        Server server =new Server(5000);
     }
 
 
