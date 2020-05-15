@@ -20,11 +20,13 @@ public class Server {
     private ServerSocket serverSocket;
     private int port;
     private HashMap<String, Contact> contactMap;
-    private CarrierEnum carrierEnum ;
+    private CarrierEnum carrierEnum;
+    private HashMap<Socket, ClientWrapper> clientList;
     final String dateFormat = "dd-mm-yyyy";
     SimpleDateFormat sdf;
 
     public Server(int port){
+        clientList = new HashMap<Socket, ClientWrapper>();
         sdf = new SimpleDateFormat(dateFormat);
         carrierEnum = new CarrierEnum("Digi", "vodafone", "Orange");
         contactMap = new HashMap<String, Contact>();
@@ -43,6 +45,7 @@ public class Server {
         while(true) try{
             socket = serverSocket.accept();//accepta conexiunea
             ClientWrapper clientWrapper = new ClientWrapper(socket);
+            clientList.put(socket, clientWrapper);
             System.out.println(" acquiered new client " + socket.getLocalPort());
             thread = new Thread(){
                 @Override
@@ -57,6 +60,20 @@ public class Server {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+    public void broadcast(Message message){
+        for (Socket socket:clientList.keySet()) {
+            sendObject( clientList.get(socket), message);
+        }
+    }
+    public void broadcastAllButSender(Message message, ClientWrapper clientWrapper){
+        for (Socket socket:clientList.keySet()) {
+            if(!clientWrapper.equals(clientList.get(socket))){
+                sendObject( clientList.get(socket), message);
+            }
+        }
+
+
     }
     public void sendInitialData(ClientWrapper clientWrapper){
 
@@ -109,15 +126,20 @@ public class Server {
                 contactMap.put(message.ID, contact);
                 Message response = new Message(contact, Action.SUCCESS, message.ID);
                 sendObject(clientWrapper, response);
+                Message adding = new Message(contact, Action.ADD, message.ID);
+                broadcastAllButSender(adding, clientWrapper);
             }
         }
         if(message.action.equals(Action.REMOVE)){
             contactMap.remove(message.ID);
+            Message removeContact = new Message(contact, Action.REMOVE, message.ID);
+            broadcastAllButSender(removeContact, clientWrapper);
         }
         if(message.action.equals(Action.MODIFY)){
             contactMap.remove(message.ID);
             contactMap.put(message.ID, contact);
-            System.out.println("XD");
+            Message modify = new Message(contact, Action.MODIFY, message.ID);
+            broadcastAllButSender(modify,clientWrapper);
         }
     }
     public void sendObject(ClientWrapper clientWrapper, Object object){

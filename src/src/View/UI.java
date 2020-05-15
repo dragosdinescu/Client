@@ -171,7 +171,6 @@ public class UI {
     private void deleteContact() {
         String id = (String) cb.getSelectedItem();
         contactMap.remove(id);
-        System.out.println(contactMap);
         updateComboBox();
     }
     private void clearFields(){

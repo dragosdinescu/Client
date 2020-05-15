@@ -81,6 +81,14 @@ public class Client  {
         if(message.action.equals(Action.SUCCESS)){
             JOptionPane.showMessageDialog(null,"Contactul a fost adaugat in server");
         }
+        if(message.action.equals((Action.REMOVE))){
+            contacts.remove(message.ID);
+            ui.updateComboBox();
+        }
+        if(message.action.equals(Action.MODIFY)){
+            contacts.replace(message.ID,message.contact);
+            ui.updateComboBox();
+        }
     }
     public void sendObject(Object object) {
         if (foundHost) {
