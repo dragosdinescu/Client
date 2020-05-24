@@ -19,6 +19,7 @@ import java.util.Set;
 
 public class UI {
     private GraphicsConfiguration gc;
+    private TextArea textarea;
     private JFrame frame;
     private JLabel firstName, lastName, email, phoneNumber, carrier, registrationDate, select;
     private JTextField firstNameField, lastNameField, emailField, phoneNumberField, carrierField, registrationDateField;
@@ -174,8 +175,7 @@ public class UI {
         updateComboBox();
     }
     private void clearFields(){
-        for (int i = 0; i <textFields.size() ; i++) {
-            JTextField element = textFields.get(i);
+        for (JTextField element : textFields) {
             element.setText("");
         }
     }

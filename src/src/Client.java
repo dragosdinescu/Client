@@ -84,10 +84,12 @@ public class Client  {
         if(message.action.equals((Action.REMOVE))){
             contacts.remove(message.ID);
             ui.updateComboBox();
+            JOptionPane.showMessageDialog(null,"Contactul a fost sters din server");
         }
         if(message.action.equals(Action.MODIFY)){
             contacts.replace(message.ID,message.contact);
             ui.updateComboBox();
+            JOptionPane.showMessageDialog(null,"Contactul a fost modificat");
         }
     }
     public void sendObject(Object object) {

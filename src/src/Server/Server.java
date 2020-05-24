@@ -26,10 +26,10 @@ public class Server {
     SimpleDateFormat sdf;
 
     public Server(int port){
-        clientList = new HashMap<Socket, ClientWrapper>();
+        clientList = new HashMap<>();
         sdf = new SimpleDateFormat(dateFormat);
         carrierEnum = new CarrierEnum("Digi", "vodafone", "Orange");
-        contactMap = new HashMap<String, Contact>();
+        contactMap = new HashMap<>();
         this.port = port;//atribuire
         createDummyContacts();
         try { //prinde eroarea
@@ -102,14 +102,14 @@ public class Server {
     }
     public void readObject(ClientWrapper clientWrapper){
         Socket socket = clientWrapper.getSocket();//returneaza instanta de getsocket DIN CLIENTWRAPPER
-        while( ! socket.isClosed()){//cat timp socketul nu e inchis, intra in try
+        while( ! socket.isClosed()){
             try{
                 Object receivedObject = clientWrapper.getObjectInputStream().readObject();//receivedObject returneaza OBIECTUL primit de la client
                 respond(clientWrapper,(Message) receivedObject);
             }catch(Exception e){
                 e.printStackTrace();
                 try {
-                    socket.close();/// inchide socketul si iasa din while si din functie pt ca nu indeplinseste conditia,
+                    socket.close();/// inchide socketul si iasa din while
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -151,7 +151,7 @@ public class Server {
         ObjectOutputStream objectOutputStream = clientWrapper.getObjectOutputStream();
         try {
             objectOutputStream.writeObject(object);//trimite obiectul din argument catre client
-            objectOutputStream.flush();//curata
+            objectOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
