@@ -14,9 +14,10 @@ public class MainDB {
         System.out.println(System.getProperty("user.dir"));
         fileReader reader = new fileReader("./src/src/Database/list.txt");
         //iterates over the data and inputs it in the database
-        for(String s : reader.readLines()) {
-            db.insertData(s);
-        }
+//        for(String s : reader.readLines()) {
+//            db.insertData(s);
+//        }
+        db.insertData("1 Dragos Dinescu dragos@yahoo.com 074 digi 10/12/2020");
         //makes the gui
         GUI ui = new GUI(db);
     }

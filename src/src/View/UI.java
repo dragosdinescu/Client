@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class UI {
     private GraphicsConfiguration gc;
-    private TextArea textarea;
+    //private TextArea textarea;
     private JFrame frame;
     private JLabel firstName, lastName, email, phoneNumber, carrier, registrationDate, select;
     private JTextField firstNameField, lastNameField, emailField, phoneNumberField, carrierField, registrationDateField;
@@ -58,6 +58,7 @@ public class UI {
         cb.setMaximumSize(cb.getPreferredSize());
         cb.setAlignmentX(Component.CENTER_ALIGNMENT);
         cb.setVisible(true);
+        comboxPanel.setLayout(new BoxLayout(comboxPanel, BoxLayout.Y_AXIS));
         clear.setAlignmentX(Component.CENTER_ALIGNMENT);
         frame.setSize(500, 300);
         frame.setLayout(new GridLayout(2, 3));
@@ -122,7 +123,7 @@ public class UI {
         fieldsPanel = new JPanel();
         comboxPanel = new JPanel();
         frame = new JFrame("Client");
-        comboxPanel.setLayout(new BoxLayout(comboxPanel, BoxLayout.Y_AXIS));
+
         select = new JLabel("Selecteaza ID");
         firstName = new JLabel("Nume");
         lastName = new JLabel("Prenume");

@@ -43,21 +43,27 @@ public class Database {
      * subject to change on bigger scale projects
      */
     private void createNewTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS fileSystem (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "	name text NOT NULL\n"
-                + ");";
-        String sqlDelete = "DROP TABLE IF EXISTS fileSystem";
+        String sql = "CREATE TABLE contacts " +
+                "(id INTEGER not NULL, " +
+                " firstName VARCHAR(255), " +
+                " lastName VARCHAR(255), " +
+                " email VARCHAR(255), " +
+                " phoneNumber VARCHAR(255), " +
+                " carrierEnum VARCHAR(255), " +
+                " registrationDate VARCHAR(255), " +
+                " PRIMARY KEY ( id ))";
+        String sqlDelete = "DROP TABLE IF EXISTS contacts";
         try {
             Statement stmt = connect.createStatement();
-            // create a new table
-            stmt.execute(sqlDelete);
-            stmt.execute(sql);
-
+            stmt.executeUpdate(sqlDelete);
+            stmt = connect.createStatement();
+            stmt.executeUpdate(sql);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
+
     }
+
 
     /**
      *
@@ -65,15 +71,18 @@ public class Database {
      * inserts the elements into the database
      */
     public void insertData(String text) {
-        String sqlInsert = "INSERT INTO fileSystem(name) VALUES(?)";
+        String[] splitted = text.split("\\s+");
         try {
-            PreparedStatement pstmt = connect.prepareStatement(sqlInsert);
-            pstmt.setString(1, text);
-            pstmt.executeUpdate();
+            Statement statement = connect.createStatement();
+            statement.executeUpdate("INSERT INTO contacts " + "VALUES ("+splitted[0]+", '"+splitted[1]+"'," +
+                    "'"+splitted[2]+"', '"+splitted[3]+"','"+splitted[4]+"','"+splitted[5]+"','"+splitted[6]+" ')");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
+
     }
+
+
 
     /**
      *
@@ -81,20 +90,33 @@ public class Database {
      * @return @String with the query results each result has a new line after it.
      */
     public String searchDB(String text) {
-        String sql = "SELECT * FROM fileSystem where name like '%" + text + "%'";
+        String sql = "SELECT * FROM contacts where id ="+text+" ";
         String returnString = "";
         try {
             PreparedStatement pstmt  = connect.prepareStatement(sql);
             ResultSet rs  = pstmt.executeQuery();
             while (rs.next()) {
-                returnString = returnString + rs.getString("name")+" ";
-                returnString = returnString + rs.getString("id") + "\n";
+                ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+
+                    int type = resultSetMetaData.getColumnType(i);
+                    if (type == Types.VARCHAR || type == Types.CHAR) {
+                        returnString = returnString + rs.getString(i) + " ";
+                    } else {
+                        returnString = returnString + rs.getLong(i) + " ";
+                    }
+                }
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        if(returnString.equals(""))
+            return "No results found";
+
         return returnString;
     }
+
+    public boolean deleteFrom
 
 }

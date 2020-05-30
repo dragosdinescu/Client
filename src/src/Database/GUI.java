@@ -23,19 +23,19 @@ import javax.swing.JTextArea;
             window.setLocationRelativeTo(null);
             window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            JPanel panel = new JPanel(); //creates a new panel
-            window.setContentPane(panel); // gives the window that specific panel
-            panel.setLayout(new FlowLayout()); // sets the way the layout renders
-            JButton searchButton = new JButton("Query db");
-            panel.add(new JLabel("Enter query word"));
-            JTextArea searchText = new JTextArea(1,25);
+            JPanel panel = new JPanel();
+            window.setContentPane(panel);
+            panel.setLayout(new FlowLayout()); // randarea layout-ului
+            JButton searchButton = new JButton("Search");
+            panel.add(new JLabel("Enter key word"));
+            JTextField searchText = new JTextField(15);
             JTextArea displayText = new JTextArea(4,25);
             displayText.setEditable(false);
             panel.add(searchText);
             panel.add(searchButton);
             panel.add(displayText);
-            panel.setPreferredSize(new Dimension(700,800));
-            window.setSize(800,800);
+            panel.setPreferredSize(new Dimension(700,400));
+            window.setSize(800,400);
 
             /**
              * Adds a action listener, when button pressed
