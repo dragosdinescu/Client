@@ -1,6 +1,7 @@
 package src.Model;
 
 import java.io.Serializable;
+
 import java.util.Date;
 
 public class Contact  implements Serializable {
@@ -9,15 +10,15 @@ public class Contact  implements Serializable {
     private String email;
     private String phoneNumber;
     private String carrierEnum;
-    private Date date;
+    private String localDate;
 
-    public Contact(String firstName, String lastName, String email, String phoneNumber, String carrierEnum, Date date){
+    public Contact(String firstName, String lastName, String email, String phoneNumber, String carrierEnum, String localDate){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.carrierEnum= carrierEnum;
-        this.date = date;
+        this.localDate = localDate;
     }
 
     public String getFirstName() {
@@ -40,8 +41,8 @@ public class Contact  implements Serializable {
         return carrierEnum;
     }
 
-    public Date getDate() {
-        return date;
+    public String getDate() {
+        return localDate;
     }
 
     public void setFirstName(String firstName) {
@@ -64,7 +65,7 @@ public class Contact  implements Serializable {
         this.carrierEnum = carrierEnum;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(String localDate) {
+        this.localDate = localDate;
     }
 }

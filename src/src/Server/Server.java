@@ -1,6 +1,9 @@
 package src.Server;
 
 import src.Constants.Action;
+import src.Database.Communication;
+import src.Database.Database;
+import src.Database.MainDB;
 import src.Message;
 import src.Model.CarrierEnum;
 import src.Model.Contact;
@@ -10,9 +13,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class Server {
     private Thread thread;
@@ -22,6 +32,7 @@ public class Server {
     private HashMap<String, Contact> contactMap;
     private CarrierEnum carrierEnum;
     private HashMap<Socket, ClientWrapper> clientList;
+    private Communication database;
     final String dateFormat = "dd-mm-yyyy";
     SimpleDateFormat sdf;
 
@@ -31,13 +42,32 @@ public class Server {
         carrierEnum = new CarrierEnum("Digi", "vodafone", "Orange");
         contactMap = new HashMap<>();
         this.port = port;//atribuire
-        createDummyContacts();
+        MainDB mainDB = new MainDB();
+        database = mainDB.initDB();
+        loadContacts();
+
         try { //prinde eroarea
             serverSocket = new ServerSocket(this.port);//instantiere
         } catch (IOException e) {
             e.printStackTrace();//printeaza eroare
         }
         startServer();
+    }
+
+    public void loadContacts(){
+        ArrayList<String> allIds = database.returnID();
+        for (String id:allIds) {
+            String model = database.searchDB(id);
+            stringToContact(model);
+        }
+    }
+
+    public Contact stringToContact(String model){
+
+        String[] split = model.split("\\s+");
+        Contact contact = new Contact(split[1],split[2],split[3],split[4],split[5],split[6]);
+        contactMap.put(split[0], contact);
+        return contact;
     }
 
     public void startServer(){//asculta dupa conexiuni noi, cand gaseste ii atribuie un theread nou
@@ -61,11 +91,11 @@ public class Server {
             e.printStackTrace();
         }
     }
-    public void broadcast(Message message){
-        for (Socket socket:clientList.keySet()) {
-            sendObject( clientList.get(socket), message);
-        }
-    }
+//    public void broadcast(Message message){
+//        for (Socket socket:clientList.keySet()) {
+//            sendObject( clientList.get(socket), message);
+//        }
+//    }
     public void broadcastAllButSender(Message message, ClientWrapper clientWrapper){
         for (Socket socket:clientList.keySet()) {
             if(!clientWrapper.equals(clientList.get(socket))){
@@ -76,30 +106,14 @@ public class Server {
 
     }
     public void sendInitialData(ClientWrapper clientWrapper){
-
         for (String key: contactMap.keySet()) {
             Contact contact = contactMap.get(key);
-            Message message = new Message(contact, Action.ADD, contact.getFirstName());
+            Message message = new Message(contact, Action.ADD, key);
             sendObject(clientWrapper, message);
         }
 
     }
-    public void createDummyContacts(){
-        Contact c1 = null;
-        Contact c2 = null;
-        Contact c3 = null;
-        try {
-             c1 = new Contact("Radu", "Soro", "ceva@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
-             c2 = new Contact("Ade", "Mirea", "someting@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
-             c3 = new Contact("Ion", "Popescu", "whatever@ceva.com", "077", carrierEnum.getDigi(), sdf.parse("01-12-2020"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-            contactMap.put(c1.getFirstName(), c1);
-            contactMap.put(c2.getFirstName(), c2);
-            contactMap.put(c3.getFirstName(), c3);
 
-    }
     public void readObject(ClientWrapper clientWrapper){
         Socket socket = clientWrapper.getSocket();//returneaza instanta de getsocket DIN CLIENTWRAPPER
         while( ! socket.isClosed()){
@@ -116,14 +130,26 @@ public class Server {
             }
         }
     }
+
+    public boolean checkIfNumberExists(Contact contact){
+        for (String key:contactMap.keySet()) {
+            Contact otherContact = contactMap.get(key);
+            if(contact.getPhoneNumber().equals(otherContact.getPhoneNumber())){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void respond(ClientWrapper clientWrapper, Message message){
         Contact contact = message.contact;
         if(message.action.equals(Action.VERIFY)){
-            if(contactMap.containsKey(message.ID)){
+            if(checkIfNumberExists(contact)){
                 Message response = new Message(contact, Action.FAIL, message.ID);
                 sendObject(clientWrapper, response);
             }else{
                 contactMap.put(message.ID, contact);
+                database.insertData(message.contactToString());
                 Message response = new Message(contact, Action.SUCCESS, message.ID);
                 sendObject(clientWrapper, response);
                 Message adding = new Message(contact, Action.ADD, message.ID);
@@ -132,12 +158,14 @@ public class Server {
         }
         if(message.action.equals(Action.REMOVE)){
             contactMap.remove(message.ID);
+            database.deleteFromDB(message.ID);
             Message removeContact = new Message(contact, Action.REMOVE, message.ID);
             broadcastAllButSender(removeContact, clientWrapper);
         }
         if(message.action.equals(Action.MODIFY)){
             contactMap.remove(message.ID);
             contactMap.put(message.ID, contact);
+            database.updateDB(message.contactToString());
             Message modify = new Message(contact, Action.MODIFY, message.ID);
             broadcastAllButSender(modify,clientWrapper);
         }

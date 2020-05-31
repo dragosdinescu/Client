@@ -58,8 +58,8 @@ public class Client  {
     public void receiveObject() {
         while (foundHost) {
             try {
-                Object o = objectInputStream.readObject();//variabila "o" returneaza obiectul de pe inputstream care a fost trimis de server
-                handle((Message) o);
+                Object obj = objectInputStream.readObject();//variabila "obj" returneaza obiectul de pe inputstream care a fost trimis de server
+                handle((Message) obj);
             } catch (Exception e){
                 foundHost=false;
                 e.printStackTrace();
@@ -71,7 +71,6 @@ public class Client  {
         if(message.action.equals(Action.ADD)){
             contacts.put(message.ID, message.contact);
             Contact contact = message.contact;
-            System.out.println(contact.getFirstName());
             ui.updateComboBox();
 
         }

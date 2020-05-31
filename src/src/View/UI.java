@@ -12,10 +12,10 @@ import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class UI {
     private GraphicsConfiguration gc;
@@ -70,7 +70,7 @@ public class UI {
     private void setActionListeners (){
         submit.addActionListener(actionEvent-> {
             Contact contact = getSelectedContact();
-            Message message = new Message(contact, Action.VERIFY, contact.getFirstName());
+            Message message = new Message(contact, Action.VERIFY, (String) cb.getSelectedItem());
             client.sendObject(message);
         });
 
@@ -78,14 +78,14 @@ public class UI {
 
         delete.addActionListener(actionEvent-> {
             Contact contact = getSelectedContact();
-            Message message = new Message(contact, Action.REMOVE, contact.getFirstName());
+            Message message = new Message(contact, Action.REMOVE, (String) cb.getSelectedItem());
             client.sendObject(message);
             deleteContact();
         });
 
         modify.addActionListener(actionEvent-> {
             Contact contact = modifyContact();
-            Message message =  new Message(contact, Action.MODIFY, contact.getFirstName());
+            Message message =  new Message(contact, Action.MODIFY, (String) cb.getSelectedItem());
             client.sendObject(message);
         });
 
@@ -94,7 +94,6 @@ public class UI {
         cb.addActionListener( actionEvent -> {
             String id = (String) cb.getSelectedItem();
             Contact selectedContact = contactMap.get(id);
-            System.out.println(selectedContact);
             if(selectedContact!=null) {
                 fillFields(selectedContact);
             }
@@ -188,20 +187,25 @@ public class UI {
         }
     }
     private void addContact(){
-        DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-        Date startDate = null;
-        try {
-            startDate = df.parse(registrationDateField.getText());
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Contact contact = new Contact(firstNameField.getText(), lastNameField.getText(), emailField.getText(), phoneNumberField.getText(),carrierField.getText(), startDate );
-        contactMap.put(firstNameField.getText(), contact);
+        Contact contact = new Contact(firstNameField.getText(), lastNameField.getText(), emailField.getText(), phoneNumberField.getText(),carrierField.getText(), registrationDateField.getText() );
+        String newId = getNewId();
+        contactMap.put(newId, contact);
         updateComboBox();
         clearFields();
-
     }
+
+    private String getNewId(){
+        ArrayList<String>ids = new ArrayList<>();
+                contactMap.keySet().forEach(key->ids.add(key));
+        Collections.sort(ids, Collections.reverseOrder());
+        if(ids.size()== 0){
+            return "0";
+        }
+        String newId = String.valueOf(Integer.parseInt(ids.get(0))  + 1);
+        return newId;
+    }
+
     private Contact modifyContact(){
         String id = (String) cb.getSelectedItem();
         Contact existingcontact = contactMap.get(id);
@@ -210,16 +214,7 @@ public class UI {
         existingcontact.setEmail(emailField.getText());
         existingcontact.setPhoneNumber(phoneNumberField.getText());
         existingcontact.setCarrierEnum(carrierField.getText());
-
-        DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-        Date startDate = null;
-        try {
-            startDate = df.parse(registrationDateField.getText());
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        existingcontact.setDate(startDate);
+        existingcontact.setDate(registrationDateField.getText());
         clearFields();
         return existingcontact;
     }
