@@ -19,7 +19,6 @@ import java.util.*;
 
 public class UI {
     private GraphicsConfiguration gc;
-    //private TextArea textarea;
     private JFrame frame;
     private JLabel firstName, lastName, email, phoneNumber, carrier, registrationDate, select;
     private JTextField firstNameField, lastNameField, emailField, phoneNumberField, carrierField, registrationDateField;
@@ -187,7 +186,6 @@ public class UI {
         }
     }
     private void addContact(){
-
         Contact contact = new Contact(firstNameField.getText(), lastNameField.getText(), emailField.getText(), phoneNumberField.getText(),carrierField.getText(), registrationDateField.getText() );
         String newId = getNewId();
         contactMap.put(newId, contact);

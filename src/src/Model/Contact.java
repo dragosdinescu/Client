@@ -2,8 +2,6 @@ package src.Model;
 
 import java.io.Serializable;
 
-import java.util.Date;
-
 public class Contact  implements Serializable {
     private String firstName;
     private String lastName;

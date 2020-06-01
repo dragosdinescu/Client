@@ -2,27 +2,18 @@ package src.Server;
 
 import src.Constants.Action;
 import src.Database.Communication;
-import src.Database.Database;
 import src.Database.MainDB;
 import src.Message;
 import src.Model.CarrierEnum;
 import src.Model.Contact;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 public class Server {
     private Thread thread;
@@ -46,7 +37,7 @@ public class Server {
         database = mainDB.initDB();
         loadContacts();
 
-        try { //prinde eroarea
+        try {
             serverSocket = new ServerSocket(this.port);//instantiere
         } catch (IOException e) {
             e.printStackTrace();//printeaza eroare
@@ -91,27 +82,21 @@ public class Server {
             e.printStackTrace();
         }
     }
-//    public void broadcast(Message message){
-//        for (Socket socket:clientList.keySet()) {
-//            sendObject( clientList.get(socket), message);
-//        }
-//    }
+
     public void broadcastAllButSender(Message message, ClientWrapper clientWrapper){
         for (Socket socket:clientList.keySet()) {
             if(!clientWrapper.equals(clientList.get(socket))){
-                sendObject( clientList.get(socket), message);
+                sendObject(clientList.get(socket), message);
             }
         }
-
-
     }
+
     public void sendInitialData(ClientWrapper clientWrapper){
         for (String key: contactMap.keySet()) {
             Contact contact = contactMap.get(key);
             Message message = new Message(contact, Action.ADD, key);
             sendObject(clientWrapper, message);
         }
-
     }
 
     public void readObject(ClientWrapper clientWrapper){

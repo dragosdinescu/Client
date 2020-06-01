@@ -15,8 +15,8 @@ public class Message implements Serializable {
         this.ID = ID;
     }
     public String contactToString(){
-         return this.ID + " "+ this.contact.getFirstName()+ " "+this.contact.getLastName()+ " "+ this.contact.getEmail()+ " "+ this.contact.getPhoneNumber()+
-         " "+ this.contact.getCarrierEnum()+" " +this.contact.getDate();
+         return this.ID +" "+ this.contact.getFirstName()+" "+this.contact.getLastName()+" "+ this.contact.getEmail()+" "+ this.contact.getPhoneNumber()+
+         " "+ this.contact.getCarrierEnum()+" "+this.contact.getDate();
     }
 
 

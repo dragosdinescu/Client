@@ -1,9 +1,5 @@
 package src.Database;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class MainDB {
 
     public Database initDB() {

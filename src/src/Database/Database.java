@@ -1,11 +1,6 @@
 package src.Database;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
 
 public class Database implements Communication {
 
@@ -44,7 +39,6 @@ public class Database implements Communication {
     /**
      * creates a new table and deletes the old one, so each time the prorgam runs it reads from the file and remakes the database
      * it deletes the table so it doesnt add the data each time the program is runs
-     * subject to change on bigger scale projects
      */
     private void createNewTable() {
         String sql = "CREATE TABLE IF NOT EXISTS contacts " +
@@ -80,7 +74,8 @@ public class Database implements Communication {
         try {
             Statement statement = connect.createStatement();
             statement.executeUpdate("INSERT INTO contacts " + "VALUES ("+splitted[0]+", '"+splitted[1]+"'," +
-                    "'"+splitted[2]+"', '"+splitted[3]+"','"+splitted[4]+"','"+splitted[5]+"','"+splitted[6]+" ')");//introduce in DB un String care contine toate datele din Contact
+                    "'"+splitted[2]+"', '"+splitted[3]+"','"+splitted[4]+"','"+splitted[5]+"','"+splitted[6]+" ')");//introduce in DB un String splituit prin
+                                                                                                                    //space care contine toate datele din Contact
         } catch (SQLException e) {
             e.printStackTrace();
         }

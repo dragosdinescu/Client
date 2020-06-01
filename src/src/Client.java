@@ -72,18 +72,17 @@ public class Client  {
             contacts.put(message.ID, message.contact);
             Contact contact = message.contact;
             ui.updateComboBox();
-
         }
         if(message.action.equals(Action.FAIL)){
             JOptionPane.showMessageDialog(null,"Contactul este deja existent");
         }
         if(message.action.equals(Action.SUCCESS)){
-            JOptionPane.showMessageDialog(null,"Contactul a fost adaugat in server");
+            JOptionPane.showMessageDialog(null,"Contactul a fost adaugat in baza de date");
         }
         if(message.action.equals((Action.REMOVE))){
             contacts.remove(message.ID);
             ui.updateComboBox();
-            JOptionPane.showMessageDialog(null,"Contactul a fost sters din server");
+            JOptionPane.showMessageDialog(null,"Contactul a fost sters din baza de date");
         }
         if(message.action.equals(Action.MODIFY)){
             contacts.replace(message.ID,message.contact);
@@ -100,7 +99,6 @@ public class Client  {
             }
         }
     }
-
 }
 
 
